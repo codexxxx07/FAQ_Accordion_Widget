@@ -36,9 +36,11 @@
   function setTheme(theme) {
     if (theme === 'dark') {
       root.classList.add('dark');
+      root.style.colorScheme = 'dark';
     } else {
       root.classList.remove('dark');
       document.body?.classList.remove('dark');
+      root.style.colorScheme = 'light';
     }
   }
 
@@ -50,6 +52,10 @@
     themeToggle.addEventListener('click', () => {
       const next = root.classList.contains('dark') ? 'light' : 'dark';
       setTheme(next);
+      themeToggle.setAttribute(
+        'aria-label',
+        next === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+      );
     });
   }
 
@@ -83,18 +89,20 @@
     trigger.setAttribute('aria-expanded', 'false');
     trigger.classList.remove('bg-indigo-50/50', 'dark:bg-indigo-950/30');
 
-    // Wait for transition before hiding from assistive tech
-    panel.addEventListener(
-      'transitionend',
-      function onEnd(e) {
-        if (e.propertyName !== 'grid-template-rows') return;
-        if (!panel.classList.contains('is-open')) {
-          panel.setAttribute('hidden', '');
-        }
-        panel.removeEventListener('transitionend', onEnd);
-      },
-      { once: true }
-    );
+    const applyHidden = () => {
+      if (!panel.classList.contains('is-open')) {
+        panel.setAttribute('hidden', '');
+      }
+    };
+
+    panel.addEventListener('transitionend', function onEnd(e) {
+      if (e.propertyName !== 'grid-template-rows') return;
+      applyHidden();
+      panel.removeEventListener('transitionend', onEnd);
+    });
+
+    // Fallback if transitionend does not fire (reduced motion, fast toggles)
+    setTimeout(applyHidden, 400);
   }
 
   /**
@@ -150,14 +158,11 @@
     openItem(item);
   }
 
-  // Bind click handlers
-  items.forEach((item) => {
-    const trigger = item.querySelector('.accordion-trigger');
+  accordion.addEventListener('click', (e) => {
+    const trigger = e.target.closest('.accordion-trigger');
     if (!trigger) return;
-
-    trigger.addEventListener('click', () => toggleItem(item));
-
-    // Keyboard: Enter / Space already handled by button element
+    const item = trigger.closest('.accordion-item');
+    if (item) toggleItem(item);
   });
 
   // Optional: open first item on load for demo (commented out — all collapsed by default)

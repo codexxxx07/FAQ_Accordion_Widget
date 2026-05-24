@@ -64,3 +64,17 @@
     animation-delay: 0.3s;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .accordion-panel,
+  .accordion-icon,
+  .accordion-icon-line-v,
+  .fade-in-section {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .fade-in-section {
+    opacity: 1;
+  }
+}
