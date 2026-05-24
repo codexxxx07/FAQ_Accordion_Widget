@@ -9,7 +9,14 @@
 }
 
 @layer components {
-  /* Smooth height + opacity accordion panel */
+  /* Limit reflow scope; lazy paint off-screen items */
+  .accordion-item {
+    contain: layout style;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 4.5rem;
+  }
+
+  /* Smooth height + opacity accordion panel (0fr → 1fr, not height:auto) */
   .accordion-panel {
     display: grid;
     grid-template-rows: 0fr;
@@ -26,6 +33,16 @@
 
   .accordion-panel-inner {
     overflow: hidden;
+    min-height: 0;
+  }
+
+  /* Active styles in CSS — avoids per-click classList churn in JS */
+  .accordion-item.is-active {
+    @apply ring-2 ring-indigo-500/20 border-indigo-200 bg-indigo-50/30 dark:border-indigo-800 dark:bg-indigo-950/40;
+  }
+
+  .accordion-item.is-active .accordion-trigger {
+    @apply bg-indigo-50/50 dark:bg-indigo-950/30;
   }
 
   /* Icon: plus rotates to × */

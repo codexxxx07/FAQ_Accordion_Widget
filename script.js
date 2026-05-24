@@ -1,26 +1,31 @@
 /**
- * FAQ Accordion Widget
- * - Single-open accordion behavior
- * - Smooth height + opacity transitions
- * - Dark mode toggle (session only — always resets to light on reload)
+ * FAQ Accordion Widget — performance-optimized
+ * - Event delegation (single listener on accordion)
+ * - Cached DOM refs, tracked active item (no full-list scans)
+ * - CSS-driven open/close animations (grid rows + opacity)
+ * - rAF scheduling instead of forced layout reads
  */
 
 (function () {
   'use strict';
 
   const THEME_STORAGE_KEYS = ['faq-theme', 'theme', 'color-theme', 'darkMode'];
-  const accordion = document.getElementById('faq-accordion');
-  const themeToggle = document.getElementById('theme-toggle');
   const root = document.documentElement;
+  const themeToggle = document.getElementById('theme-toggle');
+  const reducedMotion = window.matchMedia(
+    '(prefers-reduced-motion: reduce)'
+  ).matches;
+  const PANEL_CLOSE_MS = reducedMotion ? 0 : 400;
 
   // ─── Theme (always light on load; toggle does not persist) ───────────────────
 
   function clearThemeStorage() {
     try {
-      THEME_STORAGE_KEYS.forEach((key) => {
+      for (let i = 0; i < THEME_STORAGE_KEYS.length; i++) {
+        const key = THEME_STORAGE_KEYS[i];
         localStorage.removeItem(key);
         sessionStorage.removeItem(key);
-      });
+      }
     } catch (_) {
       /* storage unavailable */
     }
@@ -34,19 +39,16 @@
   }
 
   function setTheme(theme) {
-    if (theme === 'dark') {
-      root.classList.add('dark');
-      root.style.colorScheme = 'dark';
-    } else {
-      root.classList.remove('dark');
+    const isDark = theme === 'dark';
+    root.classList.toggle('dark', isDark);
+    root.style.colorScheme = isDark ? 'dark' : 'light';
+    if (!isDark) {
       document.body?.classList.remove('dark');
-      root.style.colorScheme = 'light';
+      clearThemeStorage();
     }
   }
 
-  function initTheme() {
-    forceLightMode();
-  }
+  forceLightMode();
 
   if (themeToggle) {
     themeToggle.addEventListener('click', () => {
@@ -59,112 +61,104 @@
     });
   }
 
-  initTheme();
-
   // ─── Accordion ───────────────────────────────────────────────────────────────
 
+  const accordion = document.getElementById('faq-accordion');
   if (!accordion) return;
 
-  const items = Array.from(accordion.querySelectorAll('.accordion-item'));
+  const itemNodes = accordion.querySelectorAll('.accordion-item');
+  const itemRefs = new Array(itemNodes.length);
+  const refByItem = new Map();
+  let activeRef = null;
 
-  /**
-   * Close a single accordion item.
-   */
-  function closeItem(item) {
-    const trigger = item.querySelector('.accordion-trigger');
-    const panel = item.querySelector('.accordion-panel');
+  for (let i = 0; i < itemNodes.length; i++) {
+    const item = itemNodes[i];
+    const ref = {
+      item,
+      trigger: item.querySelector('.accordion-trigger'),
+      panel: item.querySelector('.accordion-panel'),
+      hideTimer: 0,
+    };
+    itemRefs[i] = ref;
+    refByItem.set(item, ref);
+  }
 
-    if (!trigger || !panel) return;
+  function hidePanelWhenClosed(ref) {
+    if (!ref.panel.classList.contains('is-open')) {
+      ref.panel.setAttribute('hidden', '');
+    }
+  }
+
+  function closeItem(ref) {
+    const { item, trigger, panel } = ref;
+    if (!item.classList.contains('is-active')) return;
 
     item.classList.remove('is-active');
-    item.classList.remove(
-      'ring-2',
-      'ring-indigo-500/20',
-      'border-indigo-200',
-      'bg-indigo-50/30',
-      'dark:border-indigo-800',
-      'dark:bg-indigo-950/40'
-    );
     panel.classList.remove('is-open');
     trigger.setAttribute('aria-expanded', 'false');
-    trigger.classList.remove('bg-indigo-50/50', 'dark:bg-indigo-950/30');
 
-    const applyHidden = () => {
-      if (!panel.classList.contains('is-open')) {
-        panel.setAttribute('hidden', '');
-      }
-    };
+    if (ref.hideTimer) {
+      clearTimeout(ref.hideTimer);
+      ref.hideTimer = 0;
+    }
 
-    panel.addEventListener('transitionend', function onEnd(e) {
-      if (e.propertyName !== 'grid-template-rows') return;
-      applyHidden();
-      panel.removeEventListener('transitionend', onEnd);
-    });
-
-    // Fallback if transitionend does not fire (reduced motion, fast toggles)
-    setTimeout(applyHidden, 400);
-  }
-
-  /**
-   * Open a single accordion item.
-   */
-  function openItem(item) {
-    const trigger = item.querySelector('.accordion-trigger');
-    const panel = item.querySelector('.accordion-panel');
-
-    if (!trigger || !panel) return;
-
-    panel.removeAttribute('hidden');
-    // Force reflow so the browser picks up the open state for animation
-    void panel.offsetHeight;
-
-    item.classList.add('is-active');
-    item.classList.add(
-      'ring-2',
-      'ring-indigo-500/20',
-      'border-indigo-200',
-      'bg-indigo-50/30',
-      'dark:border-indigo-800',
-      'dark:bg-indigo-950/40'
-    );
-    panel.classList.add('is-open');
-    trigger.setAttribute('aria-expanded', 'true');
-    trigger.classList.add('bg-indigo-50/50', 'dark:bg-indigo-950/30');
-  }
-
-  /**
-   * Close every item except optionally one to keep open.
-   */
-  function closeAll(exceptItem) {
-    items.forEach((item) => {
-      if (item !== exceptItem && item.classList.contains('is-active')) {
-        closeItem(item);
-      }
-    });
-  }
-
-  /**
-   * Toggle item — only one open at a time.
-   */
-  function toggleItem(item) {
-    const isOpen = item.classList.contains('is-active');
-
-    if (isOpen) {
-      closeItem(item);
+    if (reducedMotion || PANEL_CLOSE_MS === 0) {
+      hidePanelWhenClosed(ref);
       return;
     }
 
-    closeAll(item);
-    openItem(item);
+    const onTransitionEnd = (e) => {
+      if (e.target !== panel || e.propertyName !== 'grid-template-rows') return;
+      panel.removeEventListener('transitionend', onTransitionEnd);
+      if (ref.hideTimer) {
+        clearTimeout(ref.hideTimer);
+        ref.hideTimer = 0;
+      }
+      hidePanelWhenClosed(ref);
+    };
+
+    panel.addEventListener('transitionend', onTransitionEnd);
+    ref.hideTimer = window.setTimeout(() => {
+      panel.removeEventListener('transitionend', onTransitionEnd);
+      ref.hideTimer = 0;
+      hidePanelWhenClosed(ref);
+    }, PANEL_CLOSE_MS);
+  }
+
+  function openItem(ref) {
+    const { item, trigger, panel } = ref;
+
+    panel.removeAttribute('hidden');
+
+    const applyOpen = () => {
+      item.classList.add('is-active');
+      panel.classList.add('is-open');
+      trigger.setAttribute('aria-expanded', 'true');
+    };
+
+    if (reducedMotion) {
+      applyOpen();
+      return;
+    }
+
+    requestAnimationFrame(applyOpen);
   }
 
   accordion.addEventListener('click', (e) => {
     const trigger = e.target.closest('.accordion-trigger');
     if (!trigger) return;
-    const item = trigger.closest('.accordion-item');
-    if (item) toggleItem(item);
-  });
 
-  // Optional: open first item on load for demo (commented out — all collapsed by default)
-  // openItem(items[0]);
+    const ref = refByItem.get(trigger.closest('.accordion-item'));
+    if (!ref) return;
+
+    if (ref.item.classList.contains('is-active')) {
+      closeItem(ref);
+      if (activeRef === ref) activeRef = null;
+      return;
+    }
+
+    if (activeRef) closeItem(activeRef);
+    openItem(ref);
+    activeRef = ref;
+  });
 })();
