@@ -1,0 +1,65 @@
+@import 'tailwindcss';
+@config './tailwind.config.js';
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Smooth height + opacity accordion panel */
+  .accordion-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition:
+      grid-template-rows 0.35s ease,
+      opacity 0.3s ease;
+  }
+
+  .accordion-panel.is-open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  .accordion-panel-inner {
+    overflow: hidden;
+  }
+
+  /* Icon: plus rotates to × */
+  .accordion-icon-line-v {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .accordion-item.is-active .accordion-icon-line-v {
+    transform: rotate(90deg);
+    opacity: 0;
+  }
+
+  .accordion-item.is-active .accordion-icon {
+    transform: rotate(45deg);
+  }
+
+  .accordion-icon {
+    transition: transform 0.3s ease;
+  }
+
+  /* Staggered fade-in on load */
+  .fade-in-section {
+    opacity: 0;
+    animation: fade-in-up 0.6s ease-out forwards;
+  }
+
+  .fade-in-section.fade-delay-1 {
+    animation-delay: 0.1s;
+  }
+
+  .fade-in-section.fade-delay-2 {
+    animation-delay: 0.2s;
+  }
+
+  .fade-in-section.fade-delay-3 {
+    animation-delay: 0.3s;
+  }
+}

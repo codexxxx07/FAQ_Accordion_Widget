@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A modern, accessible FAQ accordion widget built with HTML, Tailwind CSS, and vanilla JavaScript."
+    />
+    <title>FAQ Accordion Widget</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="output.css" />
+  </head>
+  <body
+    class="min-h-screen bg-gray-50 font-sans text-gray-800 antialiased transition-colors duration-300 dark:bg-gray-950 dark:text-gray-100"
+  >
+    <main class="mx-auto flex min-h-screen max-w-3xl flex-col justify-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+      <!-- Header -->
+      <header
+        class="fade-in-section mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-start sm:justify-between"
+      >
+        <div class="text-center sm:text-left">
+          <p
+            class="mb-2 text-sm font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400"
+          >
+            Help Center
+          </p>
+          <h1 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-white">
+            Frequently Asked Questions
+          </h1>
+          <p class="mt-3 max-w-xl text-base leading-relaxed text-gray-600 dark:text-gray-400">
+            Quick answers to common questions about our product, billing, and support.
+          </p>
+        </div>
+
+        <!-- Dark mode toggle -->
+        <button
+          type="button"
+          id="theme-toggle"
+          class="mx-auto flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 shadow-sm transition hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-600 dark:hover:bg-gray-800 dark:hover:text-white dark:focus-visible:ring-offset-gray-950 sm:mx-0"
+          aria-label="Toggle dark mode"
+        >
+          <svg
+            id="icon-sun"
+            class="h-5 w-5 dark:hidden"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
+            />
+          </svg>
+          <svg
+            id="icon-moon"
+            class="hidden h-5 w-5 dark:block"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"
+            />
+          </svg>
+        </button>
+      </header>
+
+      <!-- FAQ Accordion -->
+      <section
+        class="fade-in-section fade-delay-1"
+        aria-label="Frequently asked questions"
+      >
+        <div id="faq-accordion" class="flex flex-col gap-3 sm:gap-4">
+          <!-- Item 1 -->
+          <article
+            class="accordion-item rounded-2xl border border-gray-200/80 bg-white shadow-sm transition-shadow duration-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:hover:shadow-lg dark:hover:shadow-black/20"
+          >
+            <h2>
+              <button
+                type="button"
+                class="accordion-trigger flex w-full cursor-pointer items-center justify-between gap-4 rounded-2xl px-5 py-4 text-left transition-colors duration-200 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500 sm:px-6 sm:py-5 dark:hover:bg-gray-800/60"
+                aria-expanded="false"
+                aria-controls="faq-panel-1"
+                id="faq-trigger-1"
+              >
+                <span class="pr-2 text-base font-semibold text-gray-900 sm:text-lg dark:text-white">
+                  What is included in the free plan?
+                </span>
+                <span
+                  class="accordion-icon relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400"
+                  aria-hidden="true"
+                >
+                  <span class="accordion-icon-line-h absolute block h-0.5 w-3.5 rounded-full bg-current"></span>
+                  <span class="accordion-icon-line-v absolute block h-3.5 w-0.5 rounded-full bg-current"></span>
+                </span>
+              </button>
+            </h2>
+            <div
+              id="faq-panel-1"
+              class="accordion-panel"
+              role="region"
+              aria-labelledby="faq-trigger-1"
+              hidden
+            >
+              <div class="accordion-panel-inner px-5 pb-5 sm:px-6 sm:pb-6">
+                <p class="text-sm leading-relaxed text-gray-600 sm:text-base dark:text-gray-400">
+                  The free plan includes up to 3 projects, 1 GB of storage, basic analytics, and
+                  community support. You can upgrade anytime to unlock unlimited projects, advanced
+                  reporting, and priority email support.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Item 2 -->
+          <article
+            class="accordion-item rounded-2xl border border-gray-200/80 bg-white shadow-sm transition-shadow duration-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:hover:shadow-lg dark:hover:shadow-black/20"
+          >
+            <h2>
+              <button
+                type="button"
+                class="accordion-trigger flex w-full cursor-pointer items-center justify-between gap-4 rounded-2xl px-5 py-4 text-left transition-colors duration-200 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500 sm:px-6 sm:py-5 dark:hover:bg-gray-800/60"
+                aria-expanded="false"
+                aria-controls="faq-panel-2"
+                id="faq-trigger-2"
+              >
+                <span class="pr-2 text-base font-semibold text-gray-900 sm:text-lg dark:text-white">
+                  How do I cancel or change my subscription?
+                </span>
+                <span
+                  class="accordion-icon relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400"
+                  aria-hidden="true"
+                >
+                  <span class="accordion-icon-line-h absolute block h-0.5 w-3.5 rounded-full bg-current"></span>
+                  <span class="accordion-icon-line-v absolute block h-3.5 w-0.5 rounded-full bg-current"></span>
+                </span>
+              </button>
+            </h2>
+            <div
+              id="faq-panel-2"
+              class="accordion-panel"
+              role="region"
+              aria-labelledby="faq-trigger-2"
+              hidden
+            >
+              <div class="accordion-panel-inner px-5 pb-5 sm:px-6 sm:pb-6">
+                <p class="text-sm leading-relaxed text-gray-600 sm:text-base dark:text-gray-400">
+                  Go to <strong class="font-medium text-gray-800 dark:text-gray-200">Settings → Billing</strong>
+                  in your dashboard. You can switch plans, update your payment method, or cancel at
+                  any time. Cancellations take effect at the end of your current billing period, and
+                  you will retain access until then.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Item 3 -->
+          <article
+            class="accordion-item rounded-2xl border border-gray-200/80 bg-white shadow-sm transition-shadow duration-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:hover:shadow-lg dark:hover:shadow-black/20"
+          >
+            <h2>
+              <button
+                type="button"
+                class="accordion-trigger flex w-full cursor-pointer items-center justify-between gap-4 rounded-2xl px-5 py-4 text-left transition-colors duration-200 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500 sm:px-6 sm:py-5 dark:hover:bg-gray-800/60"
+                aria-expanded="false"
+                aria-controls="faq-panel-3"
+                id="faq-trigger-3"
+              >
+                <span class="pr-2 text-base font-semibold text-gray-900 sm:text-lg dark:text-white">
+                  Is my data secure and backed up?
+                </span>
+                <span
+                  class="accordion-icon relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400"
+                  aria-hidden="true"
+                >
+                  <span class="accordion-icon-line-h absolute block h-0.5 w-3.5 rounded-full bg-current"></span>
+                  <span class="accordion-icon-line-v absolute block h-3.5 w-0.5 rounded-full bg-current"></span>
+                </span>
+              </button>
+            </h2>
+            <div
+              id="faq-panel-3"
+              class="accordion-panel"
+              role="region"
+              aria-labelledby="faq-trigger-3"
+              hidden
+            >
+              <div class="accordion-panel-inner px-5 pb-5 sm:px-6 sm:pb-6">
+                <p class="text-sm leading-relaxed text-gray-600 sm:text-base dark:text-gray-400">
+                  Yes. All data is encrypted in transit (TLS 1.3) and at rest (AES-256). We run
+                  automated daily backups with 30-day retention. Enterprise customers can request
+                  custom backup schedules and dedicated infrastructure.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Item 4 -->
+          <article
+            class="accordion-item rounded-2xl border border-gray-200/80 bg-white shadow-sm transition-shadow duration-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:hover:shadow-lg dark:hover:shadow-black/20"
+          >
+            <h2>
+              <button
+                type="button"
+                class="accordion-trigger flex w-full cursor-pointer items-center justify-between gap-4 rounded-2xl px-5 py-4 text-left transition-colors duration-200 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500 sm:px-6 sm:py-5 dark:hover:bg-gray-800/60"
+                aria-expanded="false"
+                aria-controls="faq-panel-4"
+                id="faq-trigger-4"
+              >
+                <span class="pr-2 text-base font-semibold text-gray-900 sm:text-lg dark:text-white">
+                  Do you offer integrations with other tools?
+                </span>
+                <span
+                  class="accordion-icon relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400"
+                  aria-hidden="true"
+                >
+                  <span class="accordion-icon-line-h absolute block h-0.5 w-3.5 rounded-full bg-current"></span>
+                  <span class="accordion-icon-line-v absolute block h-3.5 w-0.5 rounded-full bg-current"></span>
+                </span>
+              </button>
+            </h2>
+            <div
+              id="faq-panel-4"
+              class="accordion-panel"
+              role="region"
+              aria-labelledby="faq-trigger-4"
+              hidden
+            >
+              <div class="accordion-panel-inner px-5 pb-5 sm:px-6 sm:pb-6">
+                <p class="text-sm leading-relaxed text-gray-600 sm:text-base dark:text-gray-400">
+                  We integrate with Slack, Zapier, Google Workspace, and Microsoft 365 out of the box.
+                  Pro and Enterprise plans include API access and webhooks so you can connect custom
+                  workflows. Visit our integrations directory for the full list.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Item 5 -->
+          <article
+            class="accordion-item rounded-2xl border border-gray-200/80 bg-white shadow-sm transition-shadow duration-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:hover:shadow-lg dark:hover:shadow-black/20"
+          >
+            <h2>
+              <button
+                type="button"
+                class="accordion-trigger flex w-full cursor-pointer items-center justify-between gap-4 rounded-2xl px-5 py-4 text-left transition-colors duration-200 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500 sm:px-6 sm:py-5 dark:hover:bg-gray-800/60"
+                aria-expanded="false"
+                aria-controls="faq-panel-5"
+                id="faq-trigger-5"
+              >
+                <span class="pr-2 text-base font-semibold text-gray-900 sm:text-lg dark:text-white">
+                  What kind of support can I expect?
+                </span>
+                <span
+                  class="accordion-icon relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400"
+                  aria-hidden="true"
+                >
+                  <span class="accordion-icon-line-h absolute block h-0.5 w-3.5 rounded-full bg-current"></span>
+                  <span class="accordion-icon-line-v absolute block h-3.5 w-0.5 rounded-full bg-current"></span>
+                </span>
+              </button>
+            </h2>
+            <div
+              id="faq-panel-5"
+              class="accordion-panel"
+              role="region"
+              aria-labelledby="faq-trigger-5"
+              hidden
+            >
+              <div class="accordion-panel-inner px-5 pb-5 sm:px-6 sm:pb-6">
+                <p class="text-sm leading-relaxed text-gray-600 sm:text-base dark:text-gray-400">
+                  Free users receive community forum support. Pro plans include email support with a
+                  typical response time under 24 hours on business days. Enterprise customers get a
+                  dedicated account manager and optional SLA-backed phone support.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Item 6 -->
+          <article
+            class="accordion-item rounded-2xl border border-gray-200/80 bg-white shadow-sm transition-shadow duration-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:hover:shadow-lg dark:hover:shadow-black/20"
+          >
+            <h2>
+              <button
+                type="button"
+                class="accordion-trigger flex w-full cursor-pointer items-center justify-between gap-4 rounded-2xl px-5 py-4 text-left transition-colors duration-200 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500 sm:px-6 sm:py-5 dark:hover:bg-gray-800/60"
+                aria-expanded="false"
+                aria-controls="faq-panel-6"
+                id="faq-trigger-6"
+              >
+                <span class="pr-2 text-base font-semibold text-gray-900 sm:text-lg dark:text-white">
+                  Can I try the product before committing to a paid plan?
+                </span>
+                <span
+                  class="accordion-icon relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400"
+                  aria-hidden="true"
+                >
+                  <span class="accordion-icon-line-h absolute block h-0.5 w-3.5 rounded-full bg-current"></span>
+                  <span class="accordion-icon-line-v absolute block h-3.5 w-0.5 rounded-full bg-current"></span>
+                </span>
+              </button>
+            </h2>
+            <div
+              id="faq-panel-6"
+              class="accordion-panel"
+              role="region"
+              aria-labelledby="faq-trigger-6"
+              hidden
+            >
+              <div class="accordion-panel-inner px-5 pb-5 sm:px-6 sm:pb-6">
+                <p class="text-sm leading-relaxed text-gray-600 sm:text-base dark:text-gray-400">
+                  Absolutely. Start with our free plan—no credit card required. When you are ready,
+                  start a 14-day Pro trial with full feature access. If you cancel before the trial
+                  ends, you will not be charged.
+                </p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Footer note -->
+      <footer class="fade-in-section fade-delay-2 mt-8 text-center sm:mt-10">
+        <p class="text-sm text-gray-500 dark:text-gray-500">
+          Still have questions?
+          <a
+            href="#"
+            class="font-medium text-indigo-600 underline-offset-2 transition hover:text-indigo-700 hover:underline dark:text-indigo-400 dark:hover:text-indigo-300"
+          >
+            Contact our support team
+          </a>
+        </p>
+      </footer>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
