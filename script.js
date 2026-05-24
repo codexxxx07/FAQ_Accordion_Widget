@@ -2,42 +2,54 @@
  * FAQ Accordion Widget
  * - Single-open accordion behavior
  * - Smooth height + opacity transitions
- * - Dark mode toggle with localStorage persistence
+ * - Dark mode toggle (session only — always resets to light on reload)
  */
 
 (function () {
   'use strict';
 
-  const STORAGE_KEY = 'faq-theme';
+  const THEME_STORAGE_KEYS = ['faq-theme', 'theme', 'color-theme', 'darkMode'];
   const accordion = document.getElementById('faq-accordion');
   const themeToggle = document.getElementById('theme-toggle');
   const root = document.documentElement;
 
-  // ─── Dark mode ───────────────────────────────────────────────────────────────
+  // ─── Theme (always light on load; toggle does not persist) ───────────────────
 
-  function getPreferredTheme() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === 'dark' || stored === 'light') return stored;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  function clearThemeStorage() {
+    try {
+      THEME_STORAGE_KEYS.forEach((key) => {
+        localStorage.removeItem(key);
+        sessionStorage.removeItem(key);
+      });
+    } catch (_) {
+      /* storage unavailable */
+    }
   }
 
-  function applyTheme(theme) {
+  function forceLightMode() {
+    root.classList.remove('dark');
+    document.body?.classList.remove('dark');
+    root.style.colorScheme = 'light';
+    clearThemeStorage();
+  }
+
+  function setTheme(theme) {
     if (theme === 'dark') {
       root.classList.add('dark');
     } else {
       root.classList.remove('dark');
+      document.body?.classList.remove('dark');
     }
-    localStorage.setItem(STORAGE_KEY, theme);
   }
 
   function initTheme() {
-    applyTheme(getPreferredTheme());
+    forceLightMode();
   }
 
   if (themeToggle) {
     themeToggle.addEventListener('click', () => {
       const next = root.classList.contains('dark') ? 'light' : 'dark';
-      applyTheme(next);
+      setTheme(next);
     });
   }
 
