@@ -6,8 +6,22 @@
  * - rAF scheduling instead of forced layout reads
  */
 
-(function () {
+document.addEventListener('DOMContentLoaded', function () {
   'use strict';
+
+  // Moved from index.html <head> — force light mode before paint
+  (function () {
+    var root = document.documentElement;
+    root.classList.remove('dark');
+    root.style.colorScheme = 'light';
+    var keys = ['faq-theme', 'theme', 'color-theme', 'darkMode'];
+    try {
+      keys.forEach(function (k) {
+        localStorage.removeItem(k);
+        sessionStorage.removeItem(k);
+      });
+    } catch (e) {}
+  })();
 
   const THEME_STORAGE_KEYS = ['faq-theme', 'theme', 'color-theme', 'darkMode'];
   const root = document.documentElement;
@@ -161,4 +175,4 @@
     openItem(ref);
     activeRef = ref;
   });
-})();
+});
